@@ -1,37 +1,43 @@
-## Welcome to GitHub Pages
+# Ultralight PHP Framework
 
-You can use the [editor on GitHub](https://github.com/Viruscerbero/ultralight-php-framework/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This MVC framework provides the minimal functionality needed to build an object oriented PHP website.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+<br>
+<br>
 
-### Markdown
+## The Framework
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Everything starts with the .htaccess file routing all the traffic through the index which in turn loads the library and the bootstrap code.
 
-```markdown
-Syntax highlighted code block
+Essentially all what the framework does is routing the request through the index, splitting the string in four parts: model/view/controller-action/arguments, and then trying to instantiate the model, the view and the controller objects from the names in the request.
 
-# Header 1
-## Header 2
-### Header 3
+The bootstrap file has some functions like enabling the error reporting, declaring some directories, and some code for automatic class loading, but its main function is instatiating the Router and getting it to dispatch the request.
 
-- Bulleted
-- List
+The Router constructs the Model, the View and the Controller, and then calls the action inside the Controller and pass it the arguments. All the information that the Router needs comes from `$_SERVER['REQUEST_URI']`. In order to pass a stream, like if we are dealing with a JSON POST from JavaScript, we need to use `file_get_contents('php://input')`. For example, we could use something like: ```$post = json_decode(file_get_contents('php://input'), false); (true for array, false for object)```.
 
-1. Numbered
-2. List
+The models, views and controllers must extend the respective base class. Actions should be written as actionNameAction() inside the controller that owns them.
 
-**Bold** and _Italic_ and `Code` text
+<br>
+<br>
 
-[Link](url) and ![Image](src)
-```
+## Features
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+- Router
+- A Model base class
+- A View base class
+- A Controller base class
+- A DataBaseAccess class
+- PDO to handle the access to the database
 
-### Jekyll Themes
+<br>
+<br>
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Viruscerbero/ultralight-php-framework/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+# Architecture
 
-### Support or Contact
+The soul of the framework is the MVC pattern, GoF's style.
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+The model is the one that handles the logic; it is the object with the responsibility of changing the status of the views. The request goes through the controller to the model, and the model feeds the views. 
+
+If for some reason a model object is not neccesary for a given request, then the controller is the one responsible for handling the action that is being requested. This is an easy solution when there is no need for a model.
+
+In this framework, the controller is never a mediator, so it never passes the response from the model to the view, ever. It is the responsibility of the model to let the views know that they need to update. The only purpose of the controller is calling the appropiate function on the model by sending the request from the user to the model.

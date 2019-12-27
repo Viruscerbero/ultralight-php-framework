@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	RewriteBase /app/
+	# avoid infinite loops. If the request is for index.php the directive does nothing - and stops processing rules [L]:
+	RewriteRule ^index\.php$ - [L]
+
+	# if it is not a real file and not a real directory, reroute the request to index.php:
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule . /app/index.php [L]
+
+	# RewriteCond %{REQUEST_URI} !=/index.php
+	# RewriteRule ^(.*) /index.php?url=$1 [L,PT]
+</IfModule>
+
+Options -Indexes
